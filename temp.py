@@ -6,7 +6,14 @@ from predicter import driver
 
 app = Flask(__name__)
 CORS(app)
-app.config["UPLOAD_FOLDER"] = r"C:\Users\susha\Desktop\backend\images"
+current_dir = os.getcwd()
+
+# Name of the folder you want to create a relative path for
+folder_name = 'images'
+
+# Create the relative path by joining the current directory and folder name
+relative_path = os.path.join(current_dir, folder_name)
+# app.config["UPLOAD_FOLDER"] = r"..\images"
 app.config["ALLOWED_EXTENSIONS"] = {"png", "jpg", "jpeg", "gif"}
 
 def allowed_file(filename):
@@ -18,13 +25,14 @@ def upload_file():
         return jsonify({"error": "No file selected"})
     
     file = request.files["image"]
+    # print(file)
     
     if file.filename == "":
         return jsonify({"error": "No file selected"})
     
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
-        filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+        filepath = os.path.join(relative_path, filename)
         file.save(filepath)
         data = driver(filepath)
         print(data[2])

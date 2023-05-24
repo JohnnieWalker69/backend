@@ -154,17 +154,18 @@ def resolve_label(marker):
     return "Tumor Negative"
 def driver(filename):
   api = Api()
-  image = api.call(filename,r"C:\Users\susha\Desktop\backend\images")
+  image = api.call(filename,"\\images")
   model = load_model('./model.h5')
   name,extension = filename.split('.')
   nf = name + "_predicted" + "." + extension
   data = load_image(nf)
   name, extension = filename.split('.')
   save_path = name+'_predicted'+'.'+extension
-  image = Image.fromarray(np.uint8(image), 'L')
-  image = base64.b64encode(image.tobytes()).decode('utf-8')
+  with open(nf, 'rb') as file:
+    image_data = file.read()
+    encoded_image = base64.b64encode(image_data).decode('utf-8')
     
 #   os.remove(nf)
-  return (save_path,resolve_label(np.argmax(model.predict(np.array([data])),axis=1)),image)
+  return (save_path,resolve_label(np.argmax(model.predict(np.array([data])),axis=1)),encoded_image)
 
 # print(driver(r"C:\Users\susha\Desktop\backend\images\download_1.jpeg"))
